@@ -7,9 +7,8 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class CreateUsersDTO {
-    private String dni;
+public class CreateOperationsDTO {
     private String name;
-    private String email;
-    private String accuntNumber;
+    private String type;
+    private String numberAccount;
 }

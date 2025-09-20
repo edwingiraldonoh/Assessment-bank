@@ -1,5 +1,6 @@
 package com.bank.management.service.impl;
 
+import com.bank.management.entity.Users;
 import com.bank.management.service.UsersService;
 import org.springframework.stereotype.Service;
 import com.bank.management.dto.request.CreateUsersDTO;
@@ -15,14 +16,18 @@ public class UsersServiceImpl implements UsersService {
     private final UsersRepository usersRepository;
     private final UsersMapper mapper;
 
-    private UsersServiceImpl(UsersRepository usersRepository, UsersMapper mapper) {
+    public UsersServiceImpl(UsersRepository usersRepository, UsersMapper mapper) {
         this.usersRepository = usersRepository;
         this.mapper = mapper;
     }
 
     @Override
     public UsersDTO save(CreateUsersDTO createUsersDTO) {
-        return mapper.toDTO(usersRepository.save(mapper.toEntity(createUsersDTO)));
+        Users p = mapper.toEntity(createUsersDTO);
+        Users usersSaved = usersRepository.save(p);
+        UsersDTO usersDTOSaved = mapper.toDTO(usersSaved);
+        return usersDTOSaved;
+
     }
 
     @Override

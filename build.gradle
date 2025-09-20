@@ -9,9 +9,9 @@ version = '0.0.1-SNAPSHOT'
 description = 'bank management'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -28,6 +28,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:1.5.3.Final"
     annotationProcessor "org.mapstruct:mapstruct-processor:1.5.3.Final"
     runtimeOnly 'com.h2database:h2:2.3.230'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 }
 
 tasks.named('test') {
