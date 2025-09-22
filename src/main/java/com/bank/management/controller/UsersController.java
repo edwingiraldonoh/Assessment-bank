@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name = "Users", description = "Puntos finales de gestión de usuarios")
+@Tag(name = "Usuarios", description = "Puntos finales de gestión de usuarios")
 public class UsersController {
     private final UsersService usersService;
 
@@ -28,13 +28,13 @@ public class UsersController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear un nuevo usuario", description = "Crea un nuevo usuario con los datos proporcionados")
+    @Operation(summary = "Crear un nuevo usuario", description = "Crea un nuevo usuario")
     public ResponseEntity<UsersDTO> saveUsers(@RequestBody CreateUsersDTO createUsersDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(usersService.save(createUsersDTO));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener usuario por ID", description = "Devuelve los detalles del usuario correspondiente al ID proporcionado")
+    @Operation(summary = "Obtener usuario por ID", description = "Devuelve los detalles del usuario segun el ID")
     public ResponseEntity<UsersDTO> getUsersById(@PathVariable Long id){
         return ResponseEntity.ok(usersService.getById(id));
     }
