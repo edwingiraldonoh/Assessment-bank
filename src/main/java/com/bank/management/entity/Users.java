@@ -21,7 +21,7 @@ public class Users {
     private String dni;
     private String name;
     private String email;
-    private String accuntNumber;
+    private String accountNumber;
 
     @ManyToOne
     @JoinColumn(name = "operations_id")

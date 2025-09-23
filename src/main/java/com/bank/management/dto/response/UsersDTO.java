@@ -14,5 +14,5 @@ public class UsersDTO {
     private String dni;
     private String name;
     private String email;
-    private String accuntNumber;
+    private String accountNumber;
 }
