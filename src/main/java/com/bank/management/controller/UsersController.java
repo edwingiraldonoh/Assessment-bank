@@ -1,6 +1,7 @@
 package com.bank.management.controller;
 
 import com.bank.management.dto.request.CreateUsersDTO;
+import com.bank.management.dto.request.UpdateUsersDTO;
 import com.bank.management.dto.response.UsersDTO;
 import com.bank.management.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,5 +38,18 @@ public class UsersController {
     @Operation(summary = "Obtener usuario por ID", description = "Devuelve los detalles del usuario segun el ID")
     public ResponseEntity<UsersDTO> getUsersById(@PathVariable Long id){
         return ResponseEntity.ok(usersService.getById(id));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "Actualizar usuario", description = "Actualiza los detalles de un usuario existente")
+    public ResponseEntity<UsersDTO> updateUsers(@RequestBody UpdateUsersDTO updateUsersDTO){
+        return ResponseEntity.ok(usersService.update(updateUsersDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario según el ID")
+    public ResponseEntity<Void> deleteUsers(@PathVariable Long id){
+        usersService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

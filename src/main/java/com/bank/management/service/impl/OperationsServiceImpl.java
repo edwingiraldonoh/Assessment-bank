@@ -1,5 +1,6 @@
 package com.bank.management.service.impl;
 
+import com.bank.management.dto.request.UpdateOperationsDTO;
 import com.bank.management.entity.Operations;
 import com.bank.management.service.OperationsService;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,21 @@ public class OperationsServiceImpl implements OperationsService {
     @Override
     public OperationsDTO getById(Long id) {
         return mapper.toDTO(operationsRepository.getById(id));
+    }
+
+    @Override
+    public OperationsDTO update(UpdateOperationsDTO updateOperationsDTO) {
+        Operations operations = operationsRepository.findById(updateOperationsDTO.getId()).get();
+        mapper.updateEntity(operations, updateOperationsDTO);
+        return mapper.toDTO(operationsRepository.save(operations));
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (operationsRepository.findById(id).isEmpty()) {
+            System.out.println("La operacion con el id " + id + " no se encuentra o no existe.");
+        }
+        operationsRepository.deleteById(id);
     }
 
 }

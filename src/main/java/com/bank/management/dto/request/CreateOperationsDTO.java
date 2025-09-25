@@ -10,5 +10,4 @@ import lombok.*;
 public class CreateOperationsDTO {
     private String name;
     private String type;
-    private String numberAccount;
 }

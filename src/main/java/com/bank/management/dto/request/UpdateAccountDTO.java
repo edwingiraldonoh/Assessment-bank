@@ -1,13 +1,11 @@
 package com.bank.management.dto.request;
 
-import lombok.*;
+import lombok.Data;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
-public class CreateAccountDTO {
+@Data
+
+public class UpdateAccountDTO {
+    private Long id;
     private String accountNumber;
     private String accountType;
     private Long usersId;

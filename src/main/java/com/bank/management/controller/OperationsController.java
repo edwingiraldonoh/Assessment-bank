@@ -1,6 +1,7 @@
 package com.bank.management.controller;
 
 import com.bank.management.dto.request.CreateOperationsDTO;
+import com.bank.management.dto.request.UpdateOperationsDTO;
 import com.bank.management.dto.response.OperationsDTO;
 import com.bank.management.service.OperationsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,19 @@ public class OperationsController {
     @Operation(summary = "Obtener operación por ID", description = "Devuelve los detalles de la operación seghun el ID")
     public ResponseEntity<OperationsDTO> getOperationsById(@PathVariable Long id){
         return ResponseEntity.ok(operationsService.getById(id));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "Actualizar operación", description = "Actualiza los detalles de una operación existente")
+    public ResponseEntity<OperationsDTO> updateOperations(@RequestBody UpdateOperationsDTO updateOperationsDTO){
+        return ResponseEntity.ok(operationsService.update(updateOperationsDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar operación", description = "Elimina una operación según el ID")
+    public ResponseEntity<Void> deleteOperations(@PathVariable Long id){
+        operationsService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

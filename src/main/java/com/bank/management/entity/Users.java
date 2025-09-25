@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,13 +20,16 @@ public class Users {
     private String dni;
     private String name;
     private String email;
-    private String accountNumber;
 
     @ManyToOne
     @JoinColumn(name = "operations_id")
     private Operations operations;
 
-    @OneToMany(mappedBy = "users")
-    private List<Account> account;
+    /*@OneToMany(mappedBy = "users")
+    private List<Account> account;*/
+
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 }

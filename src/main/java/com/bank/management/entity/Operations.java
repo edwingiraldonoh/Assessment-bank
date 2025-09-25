@@ -20,15 +20,14 @@ public class Operations {
     private Long id;
     private String name;
     private String type;
-    private String numberAccount;
+
+    @OneToMany(mappedBy = "operations",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Account> accounts;
 
     @OneToMany(mappedBy = "operations",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Users> users;
-
-    @OneToMany(mappedBy = "operations",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<Account> account;
 }

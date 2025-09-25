@@ -1,6 +1,9 @@
 package com.bank.management.service.impl;
 
+import com.bank.management.dto.request.UpdateUsersDTO;
 import com.bank.management.entity.Users;
+import com.bank.management.repository.AccountRepository;
+import com.bank.management.service.OperationsService;
 import com.bank.management.service.UsersService;
 import org.springframework.stereotype.Service;
 import com.bank.management.dto.request.CreateUsersDTO;
@@ -41,6 +44,21 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public UsersDTO getById(Long id) {
         return mapper.toDTO(usersRepository.getById(id));
+    }
+
+    @Override
+    public UsersDTO update(UpdateUsersDTO updateUsersDTO) {
+        Users users = usersRepository.findById(updateUsersDTO.getId()).get();
+        mapper.updateEntity(users, updateUsersDTO);
+        return mapper.toDTO(usersRepository.save(users));
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (usersRepository.findById(id).isEmpty()) {
+            System.out.println("El usuario con el id " + id + " no se encuentra o no existe.");
+        }
+        usersRepository.deleteById(id);
     }
 
 }

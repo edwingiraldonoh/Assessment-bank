@@ -1,7 +1,9 @@
 package com.bank.management.controller;
 
 import com.bank.management.dto.request.CreateAccountDTO;
+import com.bank.management.dto.request.UpdateAccountDTO;
 import com.bank.management.dto.response.AccountDTO;
+import com.bank.management.dto.response.OperationsDTO;
 import com.bank.management.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,5 +39,18 @@ public class AccountController {
     @Operation(summary = "Obtener cuenta por ID", description = "Devuelve los detalles de la cuenta segun el ID")
     public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long id){
         return ResponseEntity.ok(accountService.getById(id));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "Actualizar cuenta", description = "Actualiza los detalles de una cuenta")
+    public ResponseEntity<AccountDTO> updateAccount(@RequestBody UpdateAccountDTO updateAccountDTO){
+        return ResponseEntity.ok(accountService.update(updateAccountDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar cuenta", description = "Elimina una cuenta según el ID")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
+        accountService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
