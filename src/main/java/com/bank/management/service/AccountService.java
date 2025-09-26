@@ -7,6 +7,7 @@ import com.bank.management.dto.response.AccountDTO;
 import java.util.List;
 
 public interface AccountService {
+    AccountDTO createAccount(CreateAccountDTO dto);
     AccountDTO save(CreateAccountDTO createAccountDTO);
     List<AccountDTO> getAll();
     AccountDTO getById(Long id);

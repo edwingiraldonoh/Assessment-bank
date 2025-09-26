@@ -18,14 +18,30 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final UsersRepository usersRepository;
     private final AccountMapper mapper;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper mapper) {
+    public AccountServiceImpl(AccountRepository accountRepository, UsersRepository usersRepository, AccountMapper mapper) {
         this.accountRepository = accountRepository;
+        this.usersRepository = usersRepository;
         this.mapper = mapper;
     }
 
+    @Override
+    public AccountDTO createAccount(CreateAccountDTO dto) {
+        // Mapear DTO a entidad
+        Account account = mapper.toEntity(dto);
+
+        // Asignar el id del usuario directamente
+        account.setUsersId(dto.getCustomerId());
+
+        // Guardar en BD
+        account = accountRepository.save(account);
+
+        // Retornar DTO
+        return mapper.toDTO(account);
+    }
 
     @Override
     public AccountDTO save(CreateAccountDTO createAccountDTO) {
