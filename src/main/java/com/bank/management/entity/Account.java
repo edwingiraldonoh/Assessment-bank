@@ -6,25 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-
 @Table(name = "account")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String accountNumber;
+
+    private String AccountNumber;
     private String accountType;
+    private Long usersId;
 
-    @ManyToOne
-    @JoinColumn(name = "operations_id")
-    private Operations operations;
 
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private Users users;
+    @OneToMany(mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Operations> operations;
+
+    @OneToMany(mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Users> users;
 }

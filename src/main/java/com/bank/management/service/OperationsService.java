@@ -1,8 +1,10 @@
 package com.bank.management.service;
 
+
 import com.bank.management.dto.request.CreateOperationsDTO;
 import com.bank.management.dto.request.UpdateOperationsDTO;
 import com.bank.management.dto.response.OperationsDTO;
+
 import java.util.List;
 
 public interface OperationsService {

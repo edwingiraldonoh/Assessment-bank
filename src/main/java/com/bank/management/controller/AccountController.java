@@ -3,8 +3,8 @@ package com.bank.management.controller;
 import com.bank.management.dto.request.CreateAccountDTO;
 import com.bank.management.dto.request.UpdateAccountDTO;
 import com.bank.management.dto.response.AccountDTO;
-import com.bank.management.dto.response.OperationsDTO;
 import com.bank.management.service.AccountService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class AccountController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Obtener todas las cuentas", description = "Devuelve una lista de todas las cuentas")
+    @Operation(summary = "Obtener todas las cuenta", description = "Devuelve una lista de todas las cuentas")
     public ResponseEntity<List<AccountDTO>> getAccount(){
         return ResponseEntity.ok(accountService.getAll());
     }
@@ -36,21 +36,22 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener cuenta por ID", description = "Devuelve los detalles de la cuenta segun el ID")
-    public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long id){
+    @Operation(summary = "Obtener cuenta por ID", description = "Devuelve los detalles de la cuenta seghun el ID")
+    public ResponseEntity<AccountDTO> getOperationsById(@PathVariable Long id){
         return ResponseEntity.ok(accountService.getById(id));
     }
 
     @PutMapping("/update")
-    @Operation(summary = "Actualizar cuenta", description = "Actualiza los detalles de una cuenta")
+    @Operation(summary = "Actualizar cuenta", description = "Actualiza los detalles de una cuenta existente")
     public ResponseEntity<AccountDTO> updateAccount(@RequestBody UpdateAccountDTO updateAccountDTO){
         return ResponseEntity.ok(accountService.update(updateAccountDTO));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar cuenta", description = "Elimina una cuenta según el ID")
+    @Operation(summary = "Eliminar operación", description = "Elimina una cuenta según el ID")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
         accountService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
+

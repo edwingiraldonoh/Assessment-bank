@@ -13,4 +13,6 @@ public class OperationsDTO {
     private Long id;
     private String name;
     private String type;
+    private Long usersId;
+    private Long account;
 }

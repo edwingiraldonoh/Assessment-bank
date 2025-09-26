@@ -22,14 +22,9 @@ public class Users {
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "operations_id")
-    private Operations operations;
-
-    /*@OneToMany(mappedBy = "users")
-    private List<Account> account;*/
-
-    @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @OneToMany(mappedBy ="users") // DEBE ser "users", no "Operations"
+    private List<Operations> operations;
 }

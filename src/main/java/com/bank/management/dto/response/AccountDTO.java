@@ -14,5 +14,4 @@ public class AccountDTO {
     private String accountNumber;
     private String accountType;
     private Long usersId;
-    private Long operationsId;
 }

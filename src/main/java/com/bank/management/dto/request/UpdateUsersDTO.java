@@ -9,4 +9,5 @@ public class UpdateUsersDTO {
     private String dni;
     private String name;
     private String email;
+    private Long account;
 }

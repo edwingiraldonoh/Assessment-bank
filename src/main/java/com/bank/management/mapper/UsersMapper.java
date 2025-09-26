@@ -15,6 +15,11 @@ public interface UsersMapper {
     @Mapping(target = "account", ignore = true)
     Users toEntity(CreateUsersDTO dto);
 
+    // CORRECCIÓN PREVIA: Se cambió 'account.accountId' a 'account.id'
+    @Mapping(source = "account.id", target = "account")
     UsersDTO toDTO(Users users);
+
+    // CORRECCIÓN NECESARIA: Esto resuelve el error "Can't map property Long account to Account account"
+    @Mapping(target = "account", ignore = true)
     void updateEntity(@MappingTarget Users users, UpdateUsersDTO dto);
 }

@@ -6,8 +6,6 @@ import lombok.Data;
 
 public class UpdateAccountDTO {
     private Long id;
-    private String accountNumber;
+    private String AccountNumber;
     private String accountType;
-    private Long usersId;
-    private Long operationsId;
 }

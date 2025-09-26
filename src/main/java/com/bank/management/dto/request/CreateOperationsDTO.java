@@ -10,4 +10,6 @@ import lombok.*;
 public class CreateOperationsDTO {
     private String name;
     private String type;
+    private Long usersId;
+    private Long accountId;
 }

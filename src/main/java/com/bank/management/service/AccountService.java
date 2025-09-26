@@ -3,6 +3,7 @@ package com.bank.management.service;
 import com.bank.management.dto.request.CreateAccountDTO;
 import com.bank.management.dto.request.UpdateAccountDTO;
 import com.bank.management.dto.response.AccountDTO;
+
 import java.util.List;
 
 public interface AccountService {

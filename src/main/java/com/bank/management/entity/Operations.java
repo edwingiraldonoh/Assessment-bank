@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -21,13 +19,11 @@ public class Operations {
     private String name;
     private String type;
 
-    @OneToMany(mappedBy = "operations",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<Account> accounts;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
-    @OneToMany(mappedBy = "operations",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private List<Users> users;
+    @ManyToOne
+    @JoinColumn(name = "users_id")
+    private Users users;
 }
