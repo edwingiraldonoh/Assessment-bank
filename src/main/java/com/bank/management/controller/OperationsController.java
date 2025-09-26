@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/operations")
-@Tag(name = "Operations", description = "Puntos finales de gestión de cuentas")
+@Tag(name = "Operations", description = "Puntos finales de gestión de operaciones")
 public class OperationsController {
     private final OperationsService operationsService;
 
@@ -30,25 +30,25 @@ public class OperationsController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear una nueva o", description = "Crea una nueva cuenta")
+    @Operation(summary = "Crear una nueva operacion", description = "Crea una nueva operacion")
     public ResponseEntity<OperationsDTO> saveOperations(@RequestBody CreateOperationsDTO createOperationsDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(operationsService.save(createOperationsDTO));
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener operacion por ID", description = "Devuelve los detalles de la cuenta segun el ID")
+    @Operation(summary = "Obtener operacion por ID", description = "Devuelve los detalles de la operacion segun el ID")
     public ResponseEntity<OperationsDTO> getAccountById(@PathVariable Long id){
         return ResponseEntity.ok(operationsService.getById(id));
     }
 
     @PutMapping("/update")
-    @Operation(summary = "Actualizar operacion", description = "Actualiza los detalles de una cuenta")
+    @Operation(summary = "Actualizar operacion", description = "Actualiza los detalles de la operacion")
     public ResponseEntity<OperationsDTO> updateAccount(@RequestBody UpdateOperationsDTO updateOperationsDTO){
         return ResponseEntity.ok(operationsService.update(updateOperationsDTO));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar operacion", description = "Elimina una cuenta según el ID")
+    @Operation(summary = "Eliminar operacion", description = "Elimina una operacion según el ID")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
         operationsService.delete(id);
         return ResponseEntity.noContent().build();

@@ -36,13 +36,8 @@ import java.util.List;
 
         @Override
         public OperationsDTO save(CreateOperationsDTO dto) {
-            // La lógica de buscar las entidades es necesaria porque el mapper las ignora
-            // y el DTO de creación solo tiene los IDs.
             Account account = accountRepository.findById(dto.getAccountId()).get();
             Users users = usersRepository.findById(dto.getUsersId()).get();
-
-            // Asignar una operacion y un usuario a la cuenta
-            // **NOTA:** Esto parece ser lógica de negocio de tu app.
             users.setAccount(account);
             usersRepository.save(users);
 

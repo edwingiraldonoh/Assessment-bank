@@ -48,7 +48,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar operación", description = "Elimina una cuenta según el ID")
+    @Operation(summary = "Eliminar cuenta", description = "Elimina una cuenta según el ID")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id){
         accountService.delete(id);
         return ResponseEntity.noContent().build();
