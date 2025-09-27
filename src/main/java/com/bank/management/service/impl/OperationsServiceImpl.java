@@ -4,6 +4,7 @@ import com.bank.management.dto.request.UpdateOperationsDTO;
 import com.bank.management.entity.Account;
 import com.bank.management.entity.Operations;
 import com.bank.management.entity.Users;
+import com.bank.management.exceptions.DuplicatedDataException;
 import com.bank.management.repository.AccountRepository;
 import com.bank.management.repository.OperationsRepository;
 import com.bank.management.repository.UsersRepository;

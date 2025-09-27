@@ -2,8 +2,8 @@ package com.bank.management.service.impl;
 
 import com.bank.management.dto.request.UpdateUsersDTO;
 import com.bank.management.entity.Users;
-import com.bank.management.repository.AccountRepository;
-import com.bank.management.service.OperationsService;
+import com.bank.management.exceptions.DataNotFountException;
+import com.bank.management.exceptions.DuplicatedDataException;
 import com.bank.management.service.UsersService;
 import org.springframework.stereotype.Service;
 import com.bank.management.dto.request.CreateUsersDTO;
@@ -27,6 +27,9 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public UsersDTO save(CreateUsersDTO createUsersDTO) {
         Users p = mapper.toEntity(createUsersDTO);
+        if(usersRepository.existsByDni(createUsersDTO.getDni())){
+            throw new DuplicatedDataException("users", createUsersDTO.getDni());
+        }
         Users usersSaved = usersRepository.save(p);
         UsersDTO usersDTOSaved = mapper.toDTO(usersSaved);
         return usersDTOSaved;
@@ -43,7 +46,14 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public UsersDTO getById(Long id) {
-        return mapper.toDTO(usersRepository.getById(id));
+        /*if (usersRepository.existsById(id)){
+            return mapper.toDTO(usersRepository.findById(id).get());
+        }else{
+            throw new UsersNotFountException(id);
+        }*/
+
+        return mapper.toDTO(usersRepository.findById(id).orElseThrow(() -> new DataNotFountException(id, "Users")));
+
     }
 
     @Override

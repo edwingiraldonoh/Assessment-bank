@@ -6,6 +6,7 @@ import com.bank.management.dto.response.UsersDTO;
 import com.bank.management.service.UsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class UsersController {
 
     @PostMapping
     @Operation(summary = "Crear un nuevo usuario", description = "Crea un nuevo usuario")
-    public ResponseEntity<UsersDTO> saveUsers(@RequestBody CreateUsersDTO createUsersDTO){
+    public ResponseEntity<UsersDTO> saveUsers(@Valid @RequestBody CreateUsersDTO createUsersDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(usersService.save(createUsersDTO));
     }
 
@@ -42,7 +43,7 @@ public class UsersController {
 
     @PutMapping("/update")
     @Operation(summary = "Actualizar usuario", description = "Actualiza los detalles de un usuario existente")
-    public ResponseEntity<UsersDTO> updateUsers(@RequestBody UpdateUsersDTO updateUsersDTO){
+    public ResponseEntity<UsersDTO> updateUsers(@Valid @RequestBody UpdateUsersDTO updateUsersDTO){
         return ResponseEntity.ok(usersService.update(updateUsersDTO));
     }
 

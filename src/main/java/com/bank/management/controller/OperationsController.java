@@ -7,6 +7,7 @@ import com.bank.management.service.AccountService;
 import com.bank.management.service.OperationsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +25,14 @@ public class OperationsController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Obtener todas las cuentas", description = "Devuelve una lista de todas las cuentas")
+    @Operation(summary = "Obtener todas las operaciones", description = "Devuelve una lista de todas las cuentas")
     public ResponseEntity<List<OperationsDTO>> getOperations(){
         return ResponseEntity.ok(operationsService.getAll());
     }
 
     @PostMapping
     @Operation(summary = "Crear una nueva operacion", description = "Crea una nueva operacion")
-    public ResponseEntity<OperationsDTO> saveOperations(@RequestBody CreateOperationsDTO createOperationsDTO){
+    public ResponseEntity<OperationsDTO> saveOperations(@Valid @RequestBody CreateOperationsDTO createOperationsDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(operationsService.save(createOperationsDTO));
     }
 
@@ -43,7 +44,7 @@ public class OperationsController {
 
     @PutMapping("/update")
     @Operation(summary = "Actualizar operacion", description = "Actualiza los detalles de la operacion")
-    public ResponseEntity<OperationsDTO> updateAccount(@RequestBody UpdateOperationsDTO updateOperationsDTO){
+    public ResponseEntity<OperationsDTO> updateAccount(@Valid @RequestBody UpdateOperationsDTO updateOperationsDTO){
         return ResponseEntity.ok(operationsService.update(updateOperationsDTO));
     }
 

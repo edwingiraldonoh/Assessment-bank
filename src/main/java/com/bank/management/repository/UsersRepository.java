@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long> {
+    Boolean existsByDni(String dni);
 
 }
