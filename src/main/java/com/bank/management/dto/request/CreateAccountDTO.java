@@ -3,7 +3,6 @@ package com.bank.management.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @AllArgsConstructor
@@ -14,8 +13,7 @@ import lombok.*;
 public class CreateAccountDTO {
 
     @NotBlank(message = "El numero de cuenta no puede estar vacio")
-    @Pattern(regexp = "^[0-9]\\s$", message = "El numero de cuenta solo debe tener numeros y espacios")
-    @Positive(message = "El numero de cuenta debe ser un numeros positivo")
+    @Pattern(regexp = "^[0-9\\s]{2,20}$", message = "El numero de cuenta solo debe tener numeros y espacios")
     private String accountNumber;
 
     @NotBlank(message =  "El tipo de cuenta no puede estar vacio")

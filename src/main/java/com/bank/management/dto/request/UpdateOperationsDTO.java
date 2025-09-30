@@ -1,13 +1,23 @@
 package com.bank.management.dto.request;
 
+import jakarta.validation.constraints.Negative;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
 
 public class UpdateOperationsDTO {
     private Long id;
+
+    @NotBlank(message =  "Nombre no puede estar vacio")
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,20}$", message = "El nombre debe tener solo letras y espacios")
     private String name;
+
+    @NotBlank(message =  "El tipo no puede estar vacio")
+    @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,20}$", message = "El nombre debe tener solo letras y espacios")
     private String type;
+
     private Long usersId;
     private Long account;
 }

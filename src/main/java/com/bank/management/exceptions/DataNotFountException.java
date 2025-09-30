@@ -9,7 +9,7 @@ public class DataNotFountException extends RuntimeException {
     private final String entity;
 
     public DataNotFountException(Long id, String entity) {
-        super(String.format("%s with id %d not found", entity,id));
+        super(String.format("%s con id %d no existe", entity,id));
         this.id = id;
         this.entity = entity;
     }

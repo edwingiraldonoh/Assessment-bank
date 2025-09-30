@@ -1,14 +1,16 @@
 package com.bank.management.exceptions;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
-@AllArgsConstructor
+
 @Getter
 @Setter
+@AllArgsConstructor
 public class ValidationErrorResponse {
     private int status;
     Map<String, String> errors;

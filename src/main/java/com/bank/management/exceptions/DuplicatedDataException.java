@@ -6,10 +6,9 @@ import lombok.Getter;
 public class DuplicatedDataException extends RuntimeException {
     private final String entity;
     private final String dni;
-
     public DuplicatedDataException(String entity, String dni) {
 
-        super(String.format("%s with DNI %s already exists", entity,dni));
+        super(String.format("%s con DNI %s ya existe",entity, dni  ));
         this.entity = entity;
         this.dni = dni;
     }

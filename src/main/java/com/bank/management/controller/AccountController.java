@@ -7,6 +7,7 @@ import com.bank.management.service.AccountService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class AccountController {
 
     @PostMapping
     @Operation(summary = "Crear una nueva cuenta", description = "Crea una nueva cuenta")
-    public ResponseEntity<AccountDTO> saveAccount(@RequestBody CreateAccountDTO createAccountDTO){
+    public ResponseEntity<AccountDTO> saveAccount(@Valid @RequestBody CreateAccountDTO createAccountDTO){
         return ResponseEntity.status(HttpStatus.CREATED).body(accountService.save(createAccountDTO));
     }
 
@@ -43,7 +44,7 @@ public class AccountController {
 
     @PutMapping("/update")
     @Operation(summary = "Actualizar cuenta", description = "Actualiza los detalles de una cuenta existente")
-    public ResponseEntity<AccountDTO> updateAccount(@RequestBody UpdateAccountDTO updateAccountDTO){
+    public ResponseEntity<AccountDTO> updateAccount(@Valid @RequestBody UpdateAccountDTO updateAccountDTO){
         return ResponseEntity.ok(accountService.update(updateAccountDTO));
     }
 
