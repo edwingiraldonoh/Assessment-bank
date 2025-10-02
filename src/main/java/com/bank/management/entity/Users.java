@@ -21,11 +21,12 @@ public class Users {
     private String dni;
     private String name;
     private String email;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy ="users") // DEBE ser "users", no "Operations"
+    @OneToMany(mappedBy ="users")
     private List<Operations> operations;
 }

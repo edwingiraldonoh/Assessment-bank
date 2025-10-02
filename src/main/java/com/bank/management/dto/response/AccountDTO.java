@@ -13,5 +13,6 @@ public class AccountDTO {
     private Long id;
     private String accountNumber;
     private String accountType;
+    private String saldo;
     private Long usersId;
 }

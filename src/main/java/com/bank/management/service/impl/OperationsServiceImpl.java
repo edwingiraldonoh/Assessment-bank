@@ -22,9 +22,6 @@ import java.util.List;
         private final OperationsMapper mapper;
         private final AccountRepository accountRepository;
         private final UsersRepository usersRepository;
-
-        // CORRECCIÓN: El constructor debe inyectar el OperationsRepository directamente
-        // en lugar de la OperationsService.
         public OperationsServiceImpl(OperationsRepository operationsRepository,
                                      OperationsMapper mapper,
                                      AccountRepository accountRepository,

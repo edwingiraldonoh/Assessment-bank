@@ -21,12 +21,8 @@ public class Account{
     private Long id;
     private String AccountNumber;
     private String accountType;
+    private String saldo;
     private Long usersId;
-
-    /*@ManyToOne
-    @JoinColumn(name = "users_id", nullable = false)
-    private Users users;*/
-
 
     @OneToMany(mappedBy = "account",
             cascade = CascadeType.ALL,

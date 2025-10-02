@@ -18,6 +18,10 @@ public class UpdateAccountDTO {
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,20}$", message = "El tipo de cuents debe tener solo letras y espacios")
     private String accountType;
 
+    @NotBlank(message = "El saldo no puede estar vacio")
+    @Pattern(regexp = "^[0-9]{2,20}$", message = "El saldo solo debe tener numeros")
+    private String saldo;
+
     //Este nos ayuda a relacionar la cuenta con un cliente
     private Long customerId;
 }

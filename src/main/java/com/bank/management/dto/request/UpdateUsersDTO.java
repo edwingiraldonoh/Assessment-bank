@@ -1,9 +1,6 @@
 package com.bank.management.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -20,7 +17,12 @@ public class UpdateUsersDTO {
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,20}$", message = "El tipo de cuents debe tener solo letras y espacios")
     private String name;
 
+    @NotBlank(message = "El email no puede estar vacio")
     @Email
     private String email;
+
+    @NotBlank(message = "La contraseña no puede estar vacia")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    private String password;
     private Long account;
 }

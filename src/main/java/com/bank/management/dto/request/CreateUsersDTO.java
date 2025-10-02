@@ -19,6 +19,11 @@ public class CreateUsersDTO {
     @Pattern(regexp = "^[A-Za-zÀ-ÿ\\s]{2,20}$", message = "El nombre debe tener solo letras y espacios")
     private String name;
 
+    @NotBlank(message = "El email no puede estar vacio")
     @Email
     private String email;
+
+    @NotBlank(message = "La contraseña no puede estar vacia")
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    private String password;
 }
