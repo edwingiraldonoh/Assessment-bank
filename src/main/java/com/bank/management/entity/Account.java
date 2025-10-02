@@ -24,6 +24,9 @@ public class Account{
     private String saldo;
     private Long usersId;
 
+    public Account(Long id, String accountNumber, String accountType, String currency, Users users, List<Operations> operations) {
+    }
+
     @OneToMany(mappedBy = "account",
             cascade = CascadeType.ALL,
             orphanRemoval = true)

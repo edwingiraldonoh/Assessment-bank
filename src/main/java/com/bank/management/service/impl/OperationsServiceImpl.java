@@ -63,8 +63,6 @@ import java.util.List;
         @Override
         public OperationsDTO update(UpdateOperationsDTO updateOperationsDTO) {
             Operations operations = operationsRepository.findById(updateOperationsDTO.getId()).get();
-            // Si el DTO de actualización incluye IDs, necesitarías lógica similar a 'save' aquí.
-            // Asumiendo que updateEntity() ahora ignora las relaciones:
             mapper.updateEntity(operations, updateOperationsDTO);
             return mapper.toDTO(operationsRepository.save(operations));
         }

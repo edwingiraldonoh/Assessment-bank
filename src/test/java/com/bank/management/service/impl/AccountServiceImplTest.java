@@ -38,6 +38,7 @@ class AccountServiceImplTest {
     private Account account;
     private AccountDTO accountDTO;
     private CreateAccountDTO createAccountDTO;
+    private UpdateAccountDTO updateAccountDTO;
 
     @BeforeEach
     void setUp() {
@@ -61,6 +62,12 @@ class AccountServiceImplTest {
         accountDTO.setAccountType("AHORRO");
         accountDTO.setSaldo("30000");
         accountDTO.setUsersId(1L);
+
+        updateAccountDTO = new UpdateAccountDTO();
+        updateAccountDTO.setId(1L);
+        updateAccountDTO.setAccountNumber("1343536564");
+        updateAccountDTO.setAccountType("CORRIENTE");
+        updateAccountDTO.setSaldo("3000");
     }
 
     /* Pasos de prueba:
@@ -92,7 +99,6 @@ class AccountServiceImplTest {
         Mockito.verify(accountRepository).save(Mockito.any(Account.class));
         Mockito.verify(mapper).toDTO(Mockito.any(Account.class));
     }
-
     @Test
     void save_failed() {
         //2.
@@ -137,7 +143,6 @@ class AccountServiceImplTest {
 
 
     }
-
     @Test
     void getAlL_Failed_NotResults() {
         //2.
@@ -155,6 +160,7 @@ class AccountServiceImplTest {
         Mockito.verifyNoInteractions(mapper);
     }
 
+
     @Test
     void getById_Success() {
         // Arrange
@@ -168,7 +174,6 @@ class AccountServiceImplTest {
         assertNotNull(result);
         assertEquals(accountDTO.getId(), result.getId());
     }
-
     @Test
     void getById_Failed_ThrowsExceptions() {
         //2.
@@ -187,11 +192,59 @@ class AccountServiceImplTest {
         Mockito.verifyNoInteractions(mapper);
     }
 
-    @Test
-    void update() {
-    }
 
     @Test
-    void delete() {
+    void update_ShouldReturnUpdatedAccountDTO() {
+        // Arrange
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenReturn(account);
+        when(mapper.toDTO(any(Account.class))).thenReturn(accountDTO);
+        // No es necesario mockear updateEntity porque es un método void
+
+        // Act
+        AccountDTO result = accountService.update(updateAccountDTO);
+
+        // Assert
+        assertNotNull(result);
+        verify(mapper, times(1)).updateEntity(account, updateAccountDTO);
+        verify(accountRepository, times(1)).save(account);
+    }
+    @Test
+    void update_ShouldThrowEntityNotFoundException() {
+        // Arrange
+        when(accountRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            accountService.update(updateAccountDTO);
+        });
+
+        assertEquals("No se encontró la cuenta con id 1", exception.getMessage());
+    }
+
+
+    @Test
+    void delete_ShouldSuccess() {
+        // Arrange
+        when(accountRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(accountRepository).deleteById(1L);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> accountService.delete(1L));
+
+        // Verify
+        verify(accountRepository, times(1)).deleteById(1L);
+    }
+    @Test
+    void delete_ShouldNotFoundException() {
+        // Arrange
+        when(accountRepository.existsById(1L)).thenReturn(false);
+
+        // Act & Assert
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            accountService.delete(1L);
+        });
+
+        assertEquals("No se puede eliminar. La cuenta con id 1 no existe.", exception.getMessage());
     }
 }

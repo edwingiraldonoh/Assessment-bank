@@ -1,9 +1,7 @@
 package com.bank.management.controller;
 
 import com.bank.management.dto.request.CreateOperationsDTO;
-import com.bank.management.dto.request.CreateUsersDTO;
 import com.bank.management.dto.response.OperationsDTO;
-import com.bank.management.dto.response.UsersDTO;
 import com.bank.management.service.OperationsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +53,9 @@ class OperationsControllerTest {
     void saveOperations() {
     }
 
+
+
+    //saveUsers
     @Test
     void saveUsers_success() throws Exception{
         //1.
@@ -73,10 +74,9 @@ class OperationsControllerTest {
         //5.
         Mockito.verify(operationsService).save(Mockito.any(CreateOperationsDTO.class));
     }
-
     @Test
     void saveUsers_failure_invalidData() throws Exception{
-        //1. Prepara datos no válidos (nombre de operación vacío o nulo)
+        //1.
         CreateOperationsDTO createOperationsDTO = new CreateOperationsDTO("", "Extraccion de saldo", null, null);
 
         //2.
@@ -90,6 +90,8 @@ class OperationsControllerTest {
         //5.
         Mockito.verify(operationsService, Mockito.never()).save(Mockito.any(CreateOperationsDTO.class));
     }
+
+
 
     @Test
     void updateAccount() {

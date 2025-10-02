@@ -20,4 +20,12 @@ public class UpdateOperationsDTO {
 
     private Long usersId;
     private Long account;
+
+    public UpdateOperationsDTO(Long id, String name, String type, Long usersId, Long account) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.usersId = usersId;
+        this.account = account;
+    }
 }

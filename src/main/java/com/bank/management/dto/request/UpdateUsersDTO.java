@@ -25,4 +25,14 @@ public class UpdateUsersDTO {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
     private Long account;
+
+
+    public UpdateUsersDTO(Long id, String dni, String name, String email, String password, Long account) {
+        this.id = id;
+        this.dni = dni;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.account = account;
+    }
 }

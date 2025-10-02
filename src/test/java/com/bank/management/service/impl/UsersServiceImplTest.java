@@ -1,6 +1,7 @@
 package com.bank.management.service.impl;
 
 import com.bank.management.dto.request.CreateUsersDTO;
+import com.bank.management.dto.request.UpdateUsersDTO;
 import com.bank.management.dto.response.UsersDTO;
 import com.bank.management.entity.Account;
 import com.bank.management.entity.Users;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.NoSuchElementException;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +33,9 @@ class UsersServiceImplTest {
     private UsersRepository usersRepository;
     @Mock
     private UsersMapper mapper;
-
     private Users usersTest;
-
+    private UpdateUsersDTO updateUsersDTO;
+    private UsersDTO usersDTO;
 
     //Se le aplican las pruebas unitarias a la clase UsersServiceImpl
     private UsersService usersService;
@@ -40,7 +43,23 @@ class UsersServiceImplTest {
     @BeforeEach
     void setUp() {
         usersService = new UsersServiceImpl(usersRepository, mapper);
-        usersTest = new Users(1L, "12345678", "John", "John@gmail.com","12345678", new Account(),  new ArrayList<>());
+        Account accountTest = new Account();
+        accountTest.setId(1L);
+        // ID, DNI, Nombre, Email, Contraseña, Cuenta (Account), Lista de Transacciones
+        usersTest = new Users(1L, "1234567891", "John", "John@gmail.com","12345678", new Account(),  new ArrayList<>());
+
+        // 3. Inicialización del DTO de actualización (6 argumentos: ID, DNI, Nombre, Email, Contraseña, Account ID)
+        updateUsersDTO = new UpdateUsersDTO(1L, "9988776687", "Jane Doe", "jane.doe@example.com", "newPassword", 1L);
+        usersDTO = new UsersDTO(
+                updateUsersDTO.getId(),
+                updateUsersDTO.getDni(),
+                updateUsersDTO.getName(),
+                updateUsersDTO.getEmail(),
+                updateUsersDTO.getPassword(),
+                null // Se asume null para el ID de la cuenta, como en mi respuesta anterior
+        );
+
+
     }
 
      /* Pasos de prueba:
@@ -52,7 +71,6 @@ class UsersServiceImplTest {
      * */
 
     @Test
-
     void save_succesful() {
         //1.
         Users pTest2 = new Users(null, usersTest.getDni(), usersTest.getName(), usersTest.getEmail(), usersTest.getPassword(), new Account(), new ArrayList<>());
@@ -96,7 +114,6 @@ class UsersServiceImplTest {
         Mockito.verify(usersRepository).save(Mockito.any(Users.class));
         Mockito.verify(mapper).toDTO(Mockito.any(Users.class));
     }
-
     @Test
     void save_failed() {
 
@@ -119,6 +136,7 @@ class UsersServiceImplTest {
 
 
     }
+
 
     @Test
     void getAll_Success() {
@@ -153,7 +171,6 @@ class UsersServiceImplTest {
          Mockito.verify(usersRepository).findAll();
          Mockito.verify(mapper, Mockito.times(2)).toDTO(usersTest);
     }
-
     @Test
     void getAlL_Failed_NotResults(){
         //2.
@@ -170,11 +187,12 @@ class UsersServiceImplTest {
         Mockito.verifyNoInteractions(mapper);
     }
 
+
     @Test
     void getById_Success() {
 
         //1.
-        UsersDTO pDTO = new UsersDTO(1L, "12345678", "John", "John@gmail.com", "12345678", new Account().getId());
+        UsersDTO pDTO = new UsersDTO(1L, "1234567891", "John", "John@gmail.com", "12345678", new Account().getId());
 
         //2.
         Mockito.when(usersRepository.findById(any(Long.class))).thenReturn(Optional.ofNullable(usersTest));
@@ -208,7 +226,6 @@ class UsersServiceImplTest {
         Mockito.verify(usersRepository).findById(any(Long.class));
         Mockito.verify(mapper).toDTO(any(Users.class));
     }
-
     @Test
     void getById_Failed_ThrowsExceptions() {
         //2.
@@ -226,11 +243,86 @@ class UsersServiceImplTest {
 
     }
 
-    @Test
-    void update() {
-    }
 
     @Test
-    void delete() {
+    void update_shouldReturnUpdated() {
+        // 1. Datos de entrada (updateUsersDTO y usersDTO inicializados en @BeforeEach)
+
+        // 2.
+        Mockito.when(usersRepository.findById(updateUsersDTO.getId())).thenReturn(Optional.of(usersTest));
+        Mockito.when(usersRepository.save(any(Users.class))).thenReturn(usersTest);
+        Mockito.doNothing().when(mapper).updateEntity(any(Users.class), Mockito.eq(updateUsersDTO));
+        Mockito.when(mapper.toDTO(usersTest)).thenReturn(usersDTO);
+
+        // 3.
+        UsersDTO result = usersService.update(updateUsersDTO);
+
+        // 4.
+        assertAll("Users update successful",
+                () -> assertNotNull(result),
+                () -> assertEquals(usersDTO.getId(), result.getId()),
+                () -> assertEquals(usersDTO.getName(), result.getName()),
+                () -> assertEquals(usersDTO.getDni(), result.getDni())
+        );
+
+        // 5.
+        Mockito.verify(usersRepository).findById(updateUsersDTO.getId());
+        Mockito.verify(mapper).updateEntity(usersTest, updateUsersDTO);
+        Mockito.verify(usersRepository).save(usersTest);
+        Mockito.verify(mapper).toDTO(usersTest);
+    }
+    @Test
+    void update_shouldThrowNoSuchElement() {
+
+        // 2.
+        Mockito.when(usersRepository.findById(updateUsersDTO.getId())).thenReturn(Optional.empty());
+
+        // 3.
+        assertThrows(NoSuchElementException.class, () -> usersService.update(updateUsersDTO));
+
+        // 4. Verificación no necesaria ya que la excepción es la verificación.
+
+        // 5.
+        Mockito.verify(usersRepository).findById(updateUsersDTO.getId());
+        Mockito.verify(mapper, Mockito.never()).updateEntity(any(), any());
+        Mockito.verify(usersRepository, Mockito.never()).save(any());
+    }
+
+
+    @Test
+    void delete_shouldCallDeleteById_whenUserExists() {
+        // 1.
+        Long userId = 1L;
+
+        // 2.
+        Mockito.when(usersRepository.findById(userId)).thenReturn(Optional.of(usersTest));
+        Mockito.doNothing().when(usersRepository).deleteById(userId);
+
+        // 3.
+        usersService.delete(userId);
+
+        // 4.
+        Mockito.verify(usersRepository).findById(userId);
+        Mockito.verify(usersRepository).deleteById(userId);
+        Mockito.verifyNoInteractions(mapper);
+    }
+    @Test
+    void delete_shouldCallDeleteById_whenUserDoesNotExist() {
+        // 1.
+        Long id = 99L;
+
+        // 2.
+        Mockito.when(usersRepository.findById(id)).thenReturn(Optional.empty());
+        Mockito.doNothing().when(usersRepository).deleteById(id);
+
+        // 3.
+        usersService.delete(id);
+
+        // 4. Verificar resultados
+
+        // 5.
+        Mockito.verify(usersRepository).findById(id);
+        Mockito.verify(usersRepository).deleteById(id);
+        Mockito.verifyNoInteractions(mapper);
     }
 }

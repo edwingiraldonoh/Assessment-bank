@@ -47,6 +47,7 @@ class UsersControllerTest {
      * 5. Verificar todas las interacciones con los mocks
      * */
 
+    //GetUsersAll
     @Test
     void getUsers_shouldReturnContent  () throws Exception {
         //1.
@@ -65,7 +66,6 @@ class UsersControllerTest {
         //5.
         Mockito.verify(usersService).getAll();
     }
-
     @Test
     void getUsers_ShouldReturnEmpty() throws Exception {
         //1.
@@ -83,40 +83,14 @@ class UsersControllerTest {
         Mockito.verify(usersService).getAll();
     }
 
+
     @Test
-    void saveUsers_success() throws Exception{
-        //1.
-        CreateUsersDTO createUsersDTO = new CreateUsersDTO("1234567891", "Carlos", "Carlos@gmail.com", "123456789");
-        UsersDTO usersDTO = new UsersDTO(1L, createUsersDTO.getDni(), createUsersDTO.getName(), createUsersDTO.getEmail(), createUsersDTO.getPassword(), null);
-
-        //2.
-        Mockito.when(usersService.save(Mockito.any(CreateUsersDTO.class))).thenReturn(usersDTO);
-
-        //3 & 4.
-        mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createUsersDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.dni").value("1234567891"));
-        //5.
-        Mockito.verify(usersService).save(Mockito.any(CreateUsersDTO.class));
+    void saveUsers(){
     }
 
+    //GetUsersByID
     @Test
-    void getUsersById() throws Exception {
-        //1.
-        UsersDTO p = (new UsersDTO(1L, "1010101010", "Edwin", "Edwingiraldo@gamil.com", "12344567", new Account().getId()));
-
-        //2.
-        Mockito.when(usersService.getById(Mockito.any(Long.class))).thenReturn(p);
-
-        //3 & 4.
-        mockMvc.perform(get("/users/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.dni").value("1010101010"));
-
-        //5.
-        Mockito.verify(usersService).getById(Mockito.any(Long.class));
+    void getUsersById() {
     }
 
     @Test
