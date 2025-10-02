@@ -68,7 +68,7 @@ class AccountServiceImplTest {
     * 2. Estabelcer los comportamientos simulados necesarios
     * 3. Llamar al metodo a probar
     * 4. Verificar resultados
-    * 5. Verificar todos las interacciones con los mocks
+    * 5. Verificar todas las interacciones con los mocks
     * */
 
     @Test
