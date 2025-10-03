@@ -4,6 +4,7 @@ import com.bank.management.dto.request.UpdateUsersDTO;
 import com.bank.management.entity.Users;
 import com.bank.management.exceptions.DataNotFoundException;
 import com.bank.management.exceptions.DuplicatedDataException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.service.UsersService;
 import org.springframework.stereotype.Service;
 import com.bank.management.dto.request.CreateUsersDTO;
@@ -53,15 +54,20 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public UsersDTO update(UpdateUsersDTO updateUsersDTO) {
-        Users users = usersRepository.findById(updateUsersDTO.getId()).get();
+        Users users = usersRepository.findById(updateUsersDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No se encontró la cuenta con id " + updateUsersDTO.getId()
+                ));
+
         mapper.updateEntity(users, updateUsersDTO);
-        return mapper.toDTO(usersRepository.save(users));
+        Users updated = usersRepository.save(users);
+        return mapper.toDTO(updated);
     }
 
     @Override
     public void delete(Long id) {
-        if (usersRepository.findById(id).isEmpty()) {
-            System.out.println("El usuario con el id " + id + " no se encuentra o no existe.");
+        if (!usersRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar. El usuario con id " + id + " no existe.");
         }
         usersRepository.deleteById(id);
     }

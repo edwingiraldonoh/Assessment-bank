@@ -11,7 +11,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    // Entity -> DTO
     AccountDTO toDTO(Account account);
 
     // CreateAccountDTO -> Entity

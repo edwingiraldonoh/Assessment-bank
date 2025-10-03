@@ -4,9 +4,10 @@ import com.bank.management.dto.request.CreateAccountDTO;
 import com.bank.management.dto.request.UpdateAccountDTO;
 import com.bank.management.dto.response.AccountDTO;
 import com.bank.management.entity.Account;
+import com.bank.management.exceptions.DataNotFoundException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.mapper.AccountMapper;
 import com.bank.management.repository.AccountRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -176,75 +177,105 @@ class AccountServiceImplTest {
     }
     @Test
     void getById_Failed_ThrowsExceptions() {
-        //2.
-        Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.empty());
+            // 1.
+            Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.empty());
 
-        //3.
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            accountService.getById(1L);
-        });
+            // 2.
+            DataNotFoundException thrown = assertThrows(
+                    DataNotFoundException.class,
+                    () -> accountService.getById(1L),
+                    "Debería haberse lanzado una DataNotFoundException"
+            );
 
-        //4.
-        assertEquals("La cuenta con id 1 no existe.", exception.getMessage());
+            // 3.
+            String expectedMessage = String.format("Resource 'Account' with id '%d' not found.", 1L);
+            assertTrue(thrown.getMessage().contains("Account"), "El mensaje de la excepción debe indicar la entidad.");
 
-        //5.
-        Mockito.verify(accountRepository, times(1)).findById(1L);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            // 4.
+
+            // 5.
+            Mockito.verify(accountRepository, times(1)).findById(1L);
+            Mockito.verify(mapper, never()).toDTO(Mockito.any());
+        }
 
 
     @Test
     void update_ShouldReturnUpdatedAccountDTO() {
-        // Arrange
+        //2.
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         when(accountRepository.save(any(Account.class))).thenReturn(account);
         when(mapper.toDTO(any(Account.class))).thenReturn(accountDTO);
-        // No es necesario mockear updateEntity porque es un método void
 
-        // Act
+        //3.
         AccountDTO result = accountService.update(updateAccountDTO);
 
-        // Assert
+        //4.
+
+        //5.
         assertNotNull(result);
         verify(mapper, times(1)).updateEntity(account, updateAccountDTO);
         verify(accountRepository, times(1)).save(account);
     }
     @Test
     void update_ShouldThrowEntityNotFoundException() {
-        // Arrange
-        when(accountRepository.findById(1L)).thenReturn(Optional.empty());
+            //2.
+            Mockito.when(accountRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            accountService.update(updateAccountDTO);
-        });
+            //3.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> accountService.update(updateAccountDTO),
+                    "Debería haberse lanzado una ResourceNotFoundException"
+            );
 
-        assertEquals("No se encontró la cuenta con id 1", exception.getMessage());
-    }
+            //3.
+            assertTrue(thrown.getMessage().contains("No se encontró la cuenta con id 1"),
+                    "El mensaje debe ser el esperado.");
+
+            //4.
+
+            //5.
+            Mockito.verify(accountRepository, times(1)).findById(1L); // Solo se debe llamar a findById
+            Mockito.verify(mapper, never()).updateEntity(any(), Mockito.any());
+            Mockito.verify(accountRepository, never()).save(Mockito.any());
+        }
 
 
     @Test
     void delete_ShouldSuccess() {
-        // Arrange
-        when(accountRepository.existsById(1L)).thenReturn(true);
+        //2.
+        Mockito.when(accountRepository.existsById(1L)).thenReturn(true);
         doNothing().when(accountRepository).deleteById(1L);
 
-        // Act & Assert
+        //3.
         assertDoesNotThrow(() -> accountService.delete(1L));
 
-        // Verify
-        verify(accountRepository, times(1)).deleteById(1L);
+        //4.
+
+        //5.
+        Mockito.verify(accountRepository, times(1)).deleteById(1L);
     }
     @Test
     void delete_ShouldNotFoundException() {
-        // Arrange
-        when(accountRepository.existsById(1L)).thenReturn(false);
+            //1.
+            final Long TEST_ID = 99L;
+            final String expectedMessage = "No se puede eliminar. La cuenta con id 99 no existe.";
 
-        // Act & Assert
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            accountService.delete(1L);
-        });
+            //2.
+            Mockito.when(accountRepository.existsById(TEST_ID)).thenReturn(false);
 
-        assertEquals("No se puede eliminar. La cuenta con id 1 no existe.", exception.getMessage());
-    }
+            //3.
+
+            //4.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> accountService.delete(TEST_ID),
+                    "Debería haberse lanzado ResourceNotFoundException"
+            );
+            assertEquals(expectedMessage, thrown.getMessage(), "El mensaje de la excepción debe ser correcto.");
+
+            //5.
+            Mockito.verify(accountRepository, times(1)).existsById(TEST_ID);
+            Mockito.verify(accountRepository, never()).deleteById(anyLong());
+        }
 }

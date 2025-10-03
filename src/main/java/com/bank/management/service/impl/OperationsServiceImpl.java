@@ -4,7 +4,8 @@ import com.bank.management.dto.request.UpdateOperationsDTO;
 import com.bank.management.entity.Account;
 import com.bank.management.entity.Operations;
 import com.bank.management.entity.Users;
-import com.bank.management.exceptions.DuplicatedDataException;
+import com.bank.management.exceptions.DataNotFoundException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.repository.AccountRepository;
 import com.bank.management.repository.OperationsRepository;
 import com.bank.management.repository.UsersRepository;
@@ -57,22 +58,26 @@ import java.util.List;
 
         @Override
         public OperationsDTO getById(Long id) {
-            return mapper.toDTO(operationsRepository.getById(id));
+            return mapper.toDTO(operationsRepository.findById(id).orElseThrow(() -> new DataNotFoundException(id, "Operations")));
         }
 
         @Override
         public OperationsDTO update(UpdateOperationsDTO updateOperationsDTO) {
-            Operations operations = operationsRepository.findById(updateOperationsDTO.getId()).get();
+            Operations operations = operationsRepository.findById(updateOperationsDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "No se encontró la cuenta con id " + updateOperationsDTO.getId()
+                    ));
+
             mapper.updateEntity(operations, updateOperationsDTO);
-            return mapper.toDTO(operationsRepository.save(operations));
+            Operations updated = operationsRepository.save(operations);
+            return mapper.toDTO(updated);
         }
 
         @Override
         public void delete(Long id) {
-            if (operationsRepository.findById(id).isEmpty()) {
-                // CORRECCIÓN: Mensaje más apropiado
-                System.out.println("La operación con el id " + id + " no se encuentra o no existe.");
-            }
+            if (!operationsRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar. La operacion con id " + id + " no existe.");
+        }
             operationsRepository.deleteById(id);
         }
 

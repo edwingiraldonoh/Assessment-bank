@@ -7,6 +7,7 @@ import com.bank.management.entity.Account;
 import com.bank.management.entity.Users;
 import com.bank.management.exceptions.DataNotFoundException;
 import com.bank.management.exceptions.DuplicatedDataException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.mapper.UsersMapper;
 import com.bank.management.repository.UsersRepository;
 import com.bank.management.service.UsersService;
@@ -45,10 +46,8 @@ class UsersServiceImplTest {
         usersService = new UsersServiceImpl(usersRepository, mapper);
         Account accountTest = new Account();
         accountTest.setId(1L);
-        // ID, DNI, Nombre, Email, Contraseña, Cuenta (Account), Lista de Transacciones
+        // ID, DNI, Nombre, Email, Contraseña, Cuenta (Account)
         usersTest = new Users(1L, "1234567891", "John", "John@gmail.com","12345678", new Account(),  new ArrayList<>());
-
-        // 3. Inicialización del DTO de actualización (6 argumentos: ID, DNI, Nombre, Email, Contraseña, Account ID)
         updateUsersDTO = new UpdateUsersDTO(1L, "9988776687", "Jane Doe", "jane.doe@example.com", "newPassword", 1L);
         usersDTO = new UsersDTO(
                 updateUsersDTO.getId(),
@@ -56,18 +55,15 @@ class UsersServiceImplTest {
                 updateUsersDTO.getName(),
                 updateUsersDTO.getEmail(),
                 updateUsersDTO.getPassword(),
-                null // Se asume null para el ID de la cuenta, como en mi respuesta anterior
+                null
         );
-
-
     }
-
      /* Pasos de prueba:
      * 1. Datos de entrada (Si es necesario, Datos de salida opcionales tambien)
      * 2. Estabelcer los comportamientos simulados necesarios
      * 3. Llamar al metodo a probar
      * 4. Verificar resultados
-     * 5. Verificar todos las interacciones con los mocks
+     * 5. Verificar todas las interacciones con los mocks
      * */
 
     @Test
@@ -140,14 +136,8 @@ class UsersServiceImplTest {
 
     @Test
     void getAll_Success() {
-        /*//1.
-        List<UsersDTO> users  = new ArrayList<>();
-        users.add(new UsersDTO());
-        users.add(new UsersDTO());*/
-
         //2.
-            Mockito.when(usersRepository.findAll()).thenReturn(List.of(usersTest, usersTest));
-
+        Mockito.when(usersRepository.findAll()).thenReturn(List.of(usersTest, usersTest));
         Mockito.when(mapper.toDTO(usersTest)).thenAnswer(invocation -> {
             Users p = invocation.getArgument(0);
             return new UsersDTO(
@@ -273,56 +263,67 @@ class UsersServiceImplTest {
     }
     @Test
     void update_shouldThrowNoSuchElement() {
+            //1.
+            final UpdateUsersDTO updateDto = new UpdateUsersDTO(99L, "1010101010", "edwin", "edwin@gmail.com", "12345678", null);
 
-        // 2.
-        Mockito.when(usersRepository.findById(updateUsersDTO.getId())).thenReturn(Optional.empty());
+            //2.
+            Mockito.when(usersRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // 3.
-        assertThrows(NoSuchElementException.class, () -> usersService.update(updateUsersDTO));
+            //3.
 
-        // 4. Verificación no necesaria ya que la excepción es la verificación.
+            //4.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> usersService.update(updateDto),
+                    "Debería haberse lanzado una ResourceNotFoundException"
+            );
+            assertTrue(thrown.getMessage().contains("No se encontró la cuenta con id 99"),
+                    "El mensaje de la excepción debe ser el esperado.");
 
-        // 5.
-        Mockito.verify(usersRepository).findById(updateUsersDTO.getId());
-        Mockito.verify(mapper, Mockito.never()).updateEntity(any(), any());
-        Mockito.verify(usersRepository, Mockito.never()).save(any());
-    }
+            //5.
+            Mockito.verify(usersRepository, Mockito.times(1)).findById(99L);
+            Mockito.verify(mapper, Mockito.never()).updateEntity(any(), any());
+            Mockito.verify(usersRepository, Mockito.never()).save(any());
+            Mockito.verify(mapper, Mockito.never()).toDTO(any());
+        }
 
 
     @Test
     void delete_shouldCallDeleteById_whenUserExists() {
-        // 1.
-        Long userId = 1L;
+            //2.
+            Mockito.when(usersRepository.existsById(1L)).thenReturn(true);
+            Mockito.doNothing().when(usersRepository).deleteById(1L);
 
-        // 2.
-        Mockito.when(usersRepository.findById(userId)).thenReturn(Optional.of(usersTest));
-        Mockito.doNothing().when(usersRepository).deleteById(userId);
+            //3.
+            usersService.delete(1L);
 
-        // 3.
-        usersService.delete(userId);
+            //4.
 
-        // 4.
-        Mockito.verify(usersRepository).findById(userId);
-        Mockito.verify(usersRepository).deleteById(userId);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            //5.
+            Mockito.verify(usersRepository, Mockito.times(1)).existsById(1L);
+            Mockito.verify(usersRepository, Mockito.times(1)).deleteById(1L);
+        }
     @Test
     void delete_shouldCallDeleteById_whenUserDoesNotExist() {
-        // 1.
-        Long id = 99L;
 
-        // 2.
-        Mockito.when(usersRepository.findById(id)).thenReturn(Optional.empty());
-        Mockito.doNothing().when(usersRepository).deleteById(id);
+            //1.
+            final String expectedMessage = "No se puede eliminar. El usuario con id 999 no existe.";
 
-        // 3.
-        usersService.delete(id);
+            //2.
+            Mockito.when(usersRepository.existsById(999L)).thenReturn(false);
 
-        // 4. Verificar resultados
+            //3.
 
-        // 5.
-        Mockito.verify(usersRepository).findById(id);
-        Mockito.verify(usersRepository).deleteById(id);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            //4.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> usersService.delete(999L),
+                    "Debería haberse lanzado ResourceNotFoundException"
+            );
+            assertEquals(expectedMessage, thrown.getMessage(), "El mensaje de la excepción debe ser correcto.");
+
+            //5.
+            Mockito.verify(usersRepository, Mockito.times(1)).existsById(999L);
+            Mockito.verify(usersRepository, Mockito.never()).deleteById(Mockito.anyLong());
+        }
 }

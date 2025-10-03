@@ -4,12 +4,12 @@ import com.bank.management.dto.request.CreateAccountDTO;
 import com.bank.management.dto.request.UpdateAccountDTO;
 import com.bank.management.dto.response.AccountDTO;
 import com.bank.management.entity.Account;
-import com.bank.management.entity.Users;
+import com.bank.management.exceptions.DataNotFoundException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.mapper.AccountMapper;
 import com.bank.management.repository.AccountRepository;
 import com.bank.management.repository.UsersRepository;
 import com.bank.management.service.AccountService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,17 +60,17 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO getById(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("La cuenta con id " + id + " no existe."));
-        return mapper.toDTO(account);
+        return mapper.toDTO(accountRepository.findById(id).orElseThrow(() -> new DataNotFoundException(id, "Account")));
     }
 
     @Override
     public AccountDTO update(UpdateAccountDTO updateAccountDTO) {
         Account account = accountRepository.findById(updateAccountDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró la cuenta con id " + updateAccountDTO.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No se encontró la cuenta con id " + updateAccountDTO.getId()
+                ));
 
-        mapper.updateEntity(account, updateAccountDTO); // ✅ ahora sí existe en el mapper
+        mapper.updateEntity(account, updateAccountDTO);
         Account updated = accountRepository.save(account);
         return mapper.toDTO(updated);
     }
@@ -78,7 +78,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void delete(Long id) {
         if (!accountRepository.existsById(id)) {
-            throw new EntityNotFoundException("No se puede eliminar. La cuenta con id " + id + " no existe.");
+            throw new ResourceNotFoundException("No se puede eliminar. La cuenta con id " + id + " no existe.");
         }
         accountRepository.deleteById(id);
     }

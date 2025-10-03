@@ -1,15 +1,13 @@
 package com.bank.management.service.impl;
 
-import com.bank.management.dto.request.CreateAccountDTO;
 import com.bank.management.dto.request.CreateOperationsDTO;
 import com.bank.management.dto.request.UpdateOperationsDTO;
-import com.bank.management.dto.response.AccountDTO;
 import com.bank.management.dto.response.OperationsDTO;
-import com.bank.management.dto.response.UsersDTO;
 import com.bank.management.entity.Account;
 import com.bank.management.entity.Operations;
 import com.bank.management.entity.Users;
 import com.bank.management.exceptions.DataNotFoundException;
+import com.bank.management.exceptions.ResourceNotFoundException;
 import com.bank.management.mapper.OperationsMapper;
 import com.bank.management.repository.AccountRepository;
 import com.bank.management.repository.OperationsRepository;
@@ -227,63 +225,52 @@ class OperationsServiceImplTest {
     }
 
 
-
     @Test
     void getById_Success() {
-        //1.
-        Long id = operationsTest.getId();
-        OperationsDTO expectedDTO = new OperationsDTO(
-                operationsTest.getId(),
-                operationsTest.getName(),
-                operationsTest.getType(),
-                null,
-                null
-        );
+
+        // 1.
+        final Operations testOperation = new Operations(1L, "DEPÓSITO", "Banco", null, null);
+        final OperationsDTO expectedDto = new OperationsDTO(1L, "DEPÓSITO", "Banco", null, null);
 
         //2.
-        Mockito.when(operationsRepository.getById(id)).thenReturn(operationsTest);
-        Mockito.when(mapper.toDTO(operationsTest)).thenReturn(expectedDTO);
+        Mockito.when(operationsRepository.findById(1L)).thenReturn(Optional.of(testOperation));
+        Mockito.when(mapper.toDTO(testOperation)).thenReturn(expectedDto);
 
-        // 3. Llamar al metodo a probar
-        OperationsDTO result = operationsService.getById(id);
+        //3.
+        OperationsDTO result = operationsService.getById(1L);
 
-        // 4. Verificar resultados
-        assertAll("Operación obtenida exitosamente",
-                () -> assertNotNull(result),
-                () -> assertEquals(id, result.getId()),
-                // Comparamos el resultado con el DTO esperado, no con el objeto Entity (operationsTest)
-                () -> assertEquals(expectedDTO.getName(), result.getName())
-        );
+        //4.
+        assertNotNull(result, "El resultado no debe ser nulo.");
+        assertEquals(1L, result.getId(), "El ID del DTO debe coincidir.");
+        assertEquals(expectedDto.getType(), result.getType(), "El tipo de operación debe coincidir.");
 
-        // 5. Verificar todas las interacciones con los mocks
-        Mockito.verify(operationsRepository).getById(id);
-        Mockito.verify(mapper).toDTO(operationsTest);
+        //5.
+        Mockito.verify(operationsRepository, times(1)).findById(1L);
+        Mockito.verify(mapper, times(1)).toDTO(testOperation);
     }
     @Test
     void getById_Failed_ThrowsExceptions() {
-        // 1. Datos de entrada
-        Long nonExistentId = 99L;
+            //1.
+            final Long NON_EXISTENT_ID = 99L;
 
-        // 2. Establecer los comportamientos simulados necesarios
-        // Mockito.when(operationsRepository.getById(nonExistentId)).thenThrow(new EntityNotFoundException("No se encontró"));
-        // NOTA: operationsRepository.getById(id) en Spring Data JPA puede lanzar una
-        // org.hibernate.LazyInitializationException o devolver un proxy si no se encuentra.
-        // Para simular el fallo al intentar acceder al objeto (si el mock es estricto),
-        // o para cubrir una excepción común en Spring Data/Hibernate:
-        Mockito.when(operationsRepository.getById(nonExistentId)).thenThrow(new RuntimeException("Simulated error when accessing not found entity"));
+            //2.
+            Mockito.when(operationsRepository.findById(NON_EXISTENT_ID)).thenReturn(Optional.empty());
 
+            //3.
 
-        // 3. Llamar al metodo a probar y verificar excepción
-        // La excepción exacta depende del comportamiento real de 'getById' y el entorno Spring,
-        // pero una RuntimeException genérica es segura para la prueba de que algo falla.
-        assertThrows(RuntimeException.class, () -> operationsService.getById(nonExistentId));
+            // 4.
+            DataNotFoundException thrown = assertThrows(
+                    DataNotFoundException.class,
+                    () -> operationsService.getById(NON_EXISTENT_ID),
+                    "Debería haberse lanzado una DataNotFoundException"
+            );
+            String expectedMessagePart = String.format("Resource 'Operations' with id '%d' not found.", NON_EXISTENT_ID);
+            assertTrue(thrown.getMessage().contains("Operations"), "El mensaje de la excepción debe mencionar la entidad.");
 
-        // 4. Verificación no necesaria ya que la excepción es la verificación
-
-        // 5. Verificar todas las interacciones con los mocks
-        Mockito.verify(operationsRepository).getById(nonExistentId);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            //5.
+            Mockito.verify(operationsRepository, times(1)).findById(NON_EXISTENT_ID);
+            Mockito.verify(mapper, Mockito.never()).toDTO(any());
+        }
 
 
     @Test
@@ -313,57 +300,68 @@ class OperationsServiceImplTest {
     }
     @Test
     void update_shouldThrowNoSuchElementException() {
-        //1.
-        Mockito.when(operationsRepository.findById(updateOperationsDTO.getId())).thenReturn(Optional.empty());
+            //1.
+            final UpdateOperationsDTO updateDto = new UpdateOperationsDTO(99L, "Consignacion", "Banco", null, null);
 
-        // .
-        assertThrows(NoSuchElementException.class, () -> operationsService.update(updateOperationsDTO));
+            //2.
+            Mockito.when(operationsRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // 4. Verificación no necesaria.
+            //3.
 
-        //5.
-        Mockito.verify(operationsRepository).findById(updateOperationsDTO.getId());
-        Mockito.verify(mapper, Mockito.never()).updateEntity(any(), any());
-        Mockito.verify(operationsRepository, Mockito.never()).save(any());
-    }
+            //4.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> operationsService.update(updateDto),
+                    "Debería haberse lanzado una ResourceNotFoundException"
+            );
+            assertTrue(thrown.getMessage().contains("No se encontró la cuenta con id 99"),
+                    "El mensaje de la excepción debe ser el esperado.");
+
+            // 5.
+            Mockito.verify(operationsRepository, times(1)).findById(99L);
+            // Las siguientes llamadas NUNCA deben ocurrir si la excepción se lanza
+            Mockito.verify(mapper, Mockito.never()).updateEntity(any(), any());
+            Mockito.verify(operationsRepository, Mockito.never()).save(any());
+            Mockito.verify(mapper, Mockito.never()).toDTO(any());
+        }
 
 
     @Test
     void delete_shouldCallDeleteById_whenOperationExists() {
-        // 1.
-        Long id = 1L;
 
-        // 2.
-        Mockito.when(operationsRepository.findById(id)).thenReturn(Optional.of(operationsTest));
-        Mockito.doNothing().when(operationsRepository).deleteById(id);
 
-        // 3.
-        operationsService.delete(id);
+            //2.
+            Mockito.when(operationsRepository.existsById(1L)).thenReturn(true);
+            Mockito.doNothing().when(operationsRepository).deleteById(1L);
 
-        // 4. Verificar resultados (No hay retorno en un método void)
+            //3.
+            operationsService.delete(1L);
 
-        // 5.
-        Mockito.verify(operationsRepository).findById(id);
-        Mockito.verify(operationsRepository).deleteById(id);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            //4.
+
+            //5.
+            Mockito.verify(operationsRepository, times(1)).existsById(1L);
+            Mockito.verify(operationsRepository, times(1)).deleteById(1L);
+        }
     @Test
     void delete_shouldCallDeleteById_whenOperationDoesNotExist() {
-        // 1.
-        Long id = 99L;
+            final String expectedMessage = "No se puede eliminar. La operacion con id 999 no existe.";
 
-        // 2.
-        Mockito.when(operationsRepository.findById(id)).thenReturn(Optional.empty());
-        Mockito.doNothing().when(operationsRepository).deleteById(id);
+            //2.
+            Mockito.when(operationsRepository.existsById(999L)).thenReturn(false);
 
-        // 3.
-        operationsService.delete(id);
+            //3.
 
-        // 4. Verificar resultados
+            //4.
+            ResourceNotFoundException thrown = assertThrows(
+                    ResourceNotFoundException.class,
+                    () -> operationsService.delete(999L),
+                    "Debería haberse lanzado ResourceNotFoundException"
+            );
+            assertEquals(expectedMessage, thrown.getMessage(), "No se puede eliminar. La operacion con id 999 no existe..");
 
-        // 5.
-        Mockito.verify(operationsRepository).findById(id);
-        Mockito.verify(operationsRepository).deleteById(id);
-        Mockito.verifyNoInteractions(mapper);
-    }
+            //5.
+            Mockito.verify(operationsRepository, times(1)).existsById(999L);
+            Mockito.verify(operationsRepository, Mockito.never()).deleteById(Mockito.anyLong());
+        }
 }
